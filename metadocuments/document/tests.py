@@ -19,4 +19,4 @@ class DocumentTestCase(APITestCase):
         self.assertEqual(resp.data.get('document_number'), '112233')
         docs = Document.objects.all()
         self.assertEqual(len(docs), 1)
-        print resp.data
+
