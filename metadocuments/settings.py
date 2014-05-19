@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'document',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -47,9 +48,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'metadocuments.urls'
+ROOT_URLCONF = 'urls'
 
-WSGI_APPLICATION = 'metadocuments.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
