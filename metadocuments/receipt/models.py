@@ -11,5 +11,4 @@ class Receipt(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2,
                                  blank=True, null=True)
     currency = models.CharField(max_length=3, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
 
