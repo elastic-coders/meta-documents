@@ -17,4 +17,5 @@ class DocumentListView(ListCreateAPIView):
 
 
 class DocumentDetailView(RetrieveUpdateDestroyAPIView):
-    pass
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer

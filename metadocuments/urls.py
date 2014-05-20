@@ -2,6 +2,7 @@ from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
 from document import urls as document_urls
+from receipt import urls as receipt_urls
 
 admin.autodiscover()
 
@@ -12,4 +13,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^', include(document_urls)),
+    url(r'^', include(receipt_urls)),
 )
