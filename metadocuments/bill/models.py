@@ -13,5 +13,4 @@ class Bill(models.Model):
                                  blank=True, null=True)
     currency = models.CharField(max_length=3, blank=True, null=True)
     provider = models.CharField(max_length=40, blank=True, null=True)
-    user = models.ForeignKey(User, blank=True, null=True)
 
