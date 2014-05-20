@@ -16,7 +16,6 @@ class ReceiptTestCase(APITestCase):
                                  content_type='application/json')
         self.assertEqual(resp.status_code, 201)
         self.assertEqual(resp.data.get('amount'), 100)
-        import pdb; pdb.set_trace()
         docs = Receipt.objects.all()
         self.assertEqual(len(docs), 1)
 
