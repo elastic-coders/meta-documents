@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase
 from .models import Receipt
 
 
-class DocumentTestCase(APITestCase):
+class ReceiptTestCase(APITestCase):
 
     def test01(self):
         document_data = {'receipt_date': '2014-05-01',

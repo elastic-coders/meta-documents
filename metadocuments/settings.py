@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'document',
     'receipt',
+    'bill',
 )
 
 MIDDLEWARE_CLASSES = (
