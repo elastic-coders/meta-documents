@@ -1,8 +1,9 @@
 from rest_framework.generics import (ListCreateAPIView,
                                      RetrieveUpdateDestroyAPIView)
 from rest_framework import serializers
-from django.db import models
+from django.conf.urls import url
 
+from .models import MetaModel
 
 def make_document_app(document_name, config=None):
     ''' this function define all parts of our application
@@ -25,44 +26,60 @@ def make_document_app(document_name, config=None):
     if model_config is None:
         raise ValueError('model configuration missing')
 
-    model = get_model(document_name, model_config)
+    meta_model = get_model(document_name, model_config)
 
     # Serializer
 
     class Serializer(serializers.ModelSerializer):
 
         class Meta:
-            model = model
+            model = meta_model
 
     Serializer.__name__ = '{}Serializer'.format(document_name)
 
     views = config.pop('views', None)
     view_list = {}
+    urls = []
 
     for view_definition in views:
         view_type = view_definition.get('type', '').lower()
         if view_type == 'list':
             parent_class = ListCreateAPIView
             name_type = 'List'
+            base_url = r'^{}$'.format(document_name)
         elif view_type == 'detail':
             parent_class = RetrieveUpdateDestroyAPIView
             name_type = 'Detail'
-        attrs = {'serialzer_class': Serializer,
-                 'queryset': model.objects.all()}
+            base_url = r'^{}/(?P<pk>\d+)$'.format(document_name)
+        attrs = {'serializer_class': Serializer,
+                 'queryset': meta_model.objects.all()}
         view_name = '{}{}View'.format(document_name, name_type)
         view = type(view_name,
-                    parent_class, attrs)
+                    (parent_class,), attrs)
         view_list[view_name] = view
+        urls.append(url(base_url, view.as_view()))
 
-    return {'model': model,
-            'views': view_list}
-
+    return {'model': meta_model,
+            'views': view_list,
+            'urls': urls}
 
 
 def get_model(document_name, config):
     ''' model configuration contain a simple field list
         dictionary
     '''
+    concrete = config.pop('concrete', None)
+    if concrete:
+        from_file = concrete.get('from')
+        model_name = concrete.get('name')
+        try:
+            module = __import__(from_file, globals(), locals(), [model_name])
+            concrete_model = getattr(module, model_name, None)
+            return concrete_model
+        except ImportError:
+            raise ImportError('can not import name {} from {}'\
+                .format(model_name, from_file))
+
     field_definition = config.pop('fields', None)
     fields_attr = {}
     for fld_def in field_definition:
@@ -74,6 +91,7 @@ def get_model(document_name, config):
         fields_attr[fld_name] = fld_type
 
     model = type('{}_doc'.format(document_name),
-                  (models.Model,),
-                  {'base_fields': fields_attr})
+                  (MetaModel,),
+                  {'__module__': document_name,
+                   'base_fields': fields_attr})
     return model
