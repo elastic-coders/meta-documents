@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'bill',
     'meta_receipt',
     'meta_bill',
+    'doc_meta_app',
 )
 
 MIDDLEWARE_CLASSES = (
