@@ -6,8 +6,14 @@ from django.conf.urls import url
 from .models import MetaModel
 
 def make_all_document_app(configs):
+    ''' use to parse the configuration
+        and create the endpoints
+            input is the list of configurations
+            output is the list of app objects
+    '''
     assert configs is not None
     all_apps = []
+
     for config in configs:
         entity_name = config.get('name', '')
         entity_config = config.get('config')
@@ -19,11 +25,11 @@ def make_all_document_app(configs):
 def make_document_app(document_name, config=None):
     ''' this function define all parts of our application
         input
-            document_name: is the name of the document
+            document_name: is the name of the entity
             config: define our document configuration as a dictionary
 
         output:
-            a dictionary containing model, serializer and view
+            a dictionary containing model, serializer, views and urls
     '''
 
     if config is None:
@@ -47,6 +53,8 @@ def make_document_app(document_name, config=None):
             model = meta_model
 
     Serializer.__name__ = '{}Serializer'.format(document_name)
+
+    # Views
 
     views = config.pop('views', None)
     view_list = {}
@@ -76,8 +84,8 @@ def make_document_app(document_name, config=None):
 
 
 def get_model(document_name, config):
-    ''' model configuration contain a simple field list
-        dictionary
+    ''' model is defined out of here and is imported dinamically
+        using __import__ function
     '''
     concrete = config.pop('concrete', None)
     if concrete:
@@ -90,19 +98,3 @@ def get_model(document_name, config):
         except ImportError:
             raise ImportError('can not import name {} from {}'\
                 .format(model_name, from_file))
-
-    field_definition = config.pop('fields', None)
-    fields_attr = {}
-    for fld_def in field_definition:
-        fld_name = fld_def.get('name', None)
-        # type must be described as a model field
-        # but with metaclass must be created dinamically
-        # as the model
-        fld_type = fld_def.get('type', None)
-        fields_attr[fld_name] = fld_type
-
-    model = type('{}_doc'.format(document_name),
-                  (MetaModel,),
-                  {'__module__': document_name,
-                   'base_fields': fields_attr})
-    return model
