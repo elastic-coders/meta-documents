@@ -5,6 +5,17 @@ from django.conf.urls import url
 
 from .models import MetaModel
 
+def make_all_document_app(configs):
+    assert configs is not None
+    all_apps = []
+    for config in configs:
+        entity_name = config.get('name', '')
+        entity_config = config.get('config')
+        app = make_document_app(entity_name, entity_config)
+        all_apps.extend([{'name': entity_name,
+                         'app': app}])
+    return all_apps
+
 def make_document_app(document_name, config=None):
     ''' this function define all parts of our application
         input
